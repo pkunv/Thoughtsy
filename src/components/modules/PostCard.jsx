@@ -13,6 +13,7 @@ import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt"
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt"
 
 const PostCard = ({ post }) => {
+	console.log(post)
 	return (
 		<Grid item key={post.id} role="post" xs={12}>
 			<Card>

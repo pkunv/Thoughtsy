@@ -1,7 +1,8 @@
-import { loginAction, logoutAction, postsLoader, userLoader } from "./dataActions"
+import { loginAction, logoutAction, postLoader, postsLoader, userLoader } from "./dataActions"
 import App from "./components/routes/App"
 import { lazy } from "react"
 import Homepage from "./components/routes/Homepage"
+import Post from "./components/routes/Post"
 
 export const routes = [
 	{
@@ -24,10 +25,9 @@ export const routes = [
 				action: logoutAction,
 			},
 			{
-				path: "/reset-fetcher",
-				action: async () => {
-					return null
-				},
+				path: "/posts/:postId",
+				loader: postLoader,
+				element: <Post />,
 			},
 		],
 	},
