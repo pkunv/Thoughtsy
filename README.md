@@ -9,8 +9,9 @@ Supabase was used as back-end.
 ## Available functionality
 
 1. Handling user log in, log out and post fetching
+2. Registration with email verification
 
-## Instalation
+## Instalation and configuration
 
 1. Fork repo
 2. Create your own Supabase project, go to SQL Editor and set up tables as follows:
@@ -79,9 +80,34 @@ VITE_SUPABASE_KEY=supabase_key
 VITE_SUPABASE_SITE=supabase_site
 VITE_SUPABASE_TEST_EMAIL=test@user.com
 VITE_SUPABASE_TEST_PASSWORD=123
+VITE_TEST_SIGN_UP=0
+VITE_SUPABASE_SIGNUP_EMAIL=actual@email.com
+VITE_SUPABASE_SIGNUP_DISPLAY_NAME=e2eTestUser
+VITE_SUPABASE_SIGNUP_PASSWORD=123456
 ```
 
-7. Execute `npm run test` to start tests to check all functionality.
+7. Add a trigger in Supabase SQL Editor to insert into users table a user after signing up:
+
+```
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.users (uid)
+  values (new.id);
+  return new;
+end;
+$$ language plpgsql security definer;
+create or replace trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+```
+
+8. Execute `npm run test` to start tests to check all functionality.
+
+> **Testing sign up**: Please note that while testing sign up Supabase sends a standard verification e-mail.
+> You should turn off that setting while testing in Authentication tab -> Providers -> Email -> Confirm email
+
+> To disable or enable sign up integration test you can change `VITE_TEST_SIGN_UP` to _0_ or _1_
 
 ## Used materials
 

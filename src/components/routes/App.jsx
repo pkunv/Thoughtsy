@@ -18,6 +18,7 @@ import Footer from "../modules/Footer"
 import LoginModal from "../modules/LoginModal"
 import CloseIcon from "@mui/icons-material/Close"
 import { navItemsGuest, navItemsUser } from "../../navItems"
+import RegisterModal from "../modules/RegisterModal"
 
 const App = () => {
 	const { user } = useLoaderData()
@@ -39,6 +40,19 @@ const App = () => {
 	useEffect(() => {
 		var userFetchers = fetchers.filter((fetcher) => {
 			return fetcher.key == "login" || "logout"
+		})
+		userFetchers.forEach((userFetcher) => {
+			if (userFetcher?.state == "loading") {
+				enqueueSnackbar(userFetcher?.data?.message, {
+					variant: userFetcher?.data?.success ? "success" : "error",
+					preventDuplicate: true,
+				})
+			}
+		})
+	}, [fetchers])
+	useEffect(() => {
+		var userFetchers = fetchers.filter((fetcher) => {
+			return fetcher.key == "register"
 		})
 		userFetchers.forEach((userFetcher) => {
 			if (userFetcher?.state == "loading") {
@@ -77,6 +91,7 @@ const App = () => {
 				)}
 			></SnackbarProvider>
 			<LoginModal modalOpen={modalOpen} handleModalToggle={handleModalToggle} />
+			<RegisterModal modalOpen={modalOpen} handleModalToggle={handleModalToggle} />
 			<MainDrawer
 				navItems={navItems}
 				drawerToggle={drawerToggle}
