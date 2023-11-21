@@ -1,6 +1,12 @@
-import { loginAction, logoutAction, postLoader, postsLoader, userLoader } from "./dataActions"
+import {
+	loginAction,
+	logoutAction,
+	postLoader,
+	postsLoader,
+	userLoader,
+	registerAction,
+} from "./dataActions"
 import App from "./components/routes/App"
-import { lazy } from "react"
 import Homepage from "./components/routes/Homepage"
 import Post from "./components/routes/Post"
 
@@ -19,6 +25,13 @@ export const routes = [
 			{
 				path: "/login",
 				action: loginAction,
+				loader: async () => {
+					return redirect("/")
+				},
+			},
+			{
+				path: "/register",
+				action: registerAction,
 			},
 			{
 				path: "/logout",

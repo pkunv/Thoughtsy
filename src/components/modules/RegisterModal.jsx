@@ -7,18 +7,18 @@ import {
 	TextField,
 	Divider,
 	Modal,
-	Box,
 } from "@mui/material"
 import Grid from "@mui/material/Grid"
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 
-import { Controller, FormProvider, set, useForm } from "react-hook-form"
-import { useFetcher, useNavigate, useSubmit } from "react-router-dom"
+import { Controller, FormProvider, useForm } from "react-hook-form"
+import { useFetcher } from "react-router-dom"
 
 const initialFormState = {
 	email: "",
+	display_name: "",
 	password: "",
-	captchaToken: "",
+	repassword: "",
 }
 
 const style = {
@@ -32,9 +32,9 @@ const style = {
 	boxShadow: 24,
 }
 
-export default function LoginModal({ modalOpen, handleModalToggle }) {
+export default function RegisterModal({ modalOpen, handleModalToggle }) {
 	const toggleModal = () => {
-		handleModalToggle("login")
+		handleModalToggle("register")
 	}
 	const {
 		control,
@@ -47,13 +47,13 @@ export default function LoginModal({ modalOpen, handleModalToggle }) {
 		mode: "onChange",
 		defaultValues: initialFormState,
 	})
-	const fetcher = useFetcher({ key: "login" })
+	const fetcher = useFetcher({ key: "register" })
 
 	const submitForm = (data) => {
 		fetcher.submit(data, {
 			method: "post",
 			encType: "application/json",
-			action: "/login",
+			action: "/register",
 		})
 	}
 
@@ -70,12 +70,12 @@ export default function LoginModal({ modalOpen, handleModalToggle }) {
 				formState: { errors },
 			}}
 		>
-			<Modal open={modalOpen.login} onClose={toggleModal}>
+			<Modal open={modalOpen.register} onClose={toggleModal}>
 				<Card sx={style}>
 					<fetcher.Form onSubmit={handleSubmit(submitForm)}>
 						<CardContent>
 							<Typography variant="h3" sx={{ p: 2 }}>
-								Log in
+								Register
 							</Typography>
 							<Grid container item xs={12} spacing={2} p={2}>
 								<Grid item xs={12}>
@@ -107,6 +107,28 @@ export default function LoginModal({ modalOpen, handleModalToggle }) {
 								</Grid>
 								<Grid item xs={12}>
 									<Controller
+										name="display_name"
+										control={control}
+										rules={{
+											required: { value: true, message: "Display name is required." },
+										}}
+										render={({ field }) => (
+											<TextField
+												{...field}
+												label="Display name"
+												placeholder="Enter your display name here..."
+												name="display_name"
+												autoComplete="display_name"
+												fullWidth
+												autoFocus
+												error={errors?.display_name}
+												helperText={errors?.display_name?.message}
+											/>
+										)}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<Controller
 										name="password"
 										control={control}
 										rules={{ required: { value: true, message: "Password is required." } }}
@@ -125,12 +147,36 @@ export default function LoginModal({ modalOpen, handleModalToggle }) {
 										)}
 									/>
 								</Grid>
+								<Grid item xs={12}>
+									<Controller
+										name="repassword"
+										control={control}
+										rules={{
+											required: { value: true, message: "Password is required." },
+											validate: (value, formValues) =>
+												value === formValues.password || "Passwords need to be the same.", // validate re-entered password
+										}}
+										render={({ field }) => (
+											<TextField
+												{...field}
+												label="Re-enter your password"
+												placeholder="Your password again..."
+												name="repassword"
+												autoComplete="repassword"
+												type="password"
+												fullWidth
+												error={errors?.repassword}
+												helperText={errors?.repassword?.message}
+											/>
+										)}
+									/>
+								</Grid>
 							</Grid>
 						</CardContent>
 						<CardActions>
 							<Grid container item xs={12} justifyContent="flex-end">
 								<Divider sx={{ width: "100%", mt: 1, mb: 1 }}></Divider>
-								<Button type="submit">Login</Button>
+								<Button type="submit">Register</Button>
 								<Button type="button" onClick={toggleModal}>
 									Close
 								</Button>

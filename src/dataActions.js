@@ -15,6 +15,24 @@ export const logoutAction = async ({ params, request }) => {
 	return { success: !error, message }
 }
 
+export const registerAction = async ({ params, request }) => {
+	var requestData = await request.json()
+	const { data, error: signUpError } = await supabase.auth.signUp({
+		email: requestData.email,
+		password: requestData.password,
+	})
+	const { error: updatingError } = await supabase
+		.from("users")
+		.update({ display_name: requestData.display_name })
+		.eq("uid", data.user.id)
+
+	var message =
+		!signUpError && !updatingError
+			? "You signed up successfully, we sent you an e-mail, please verify your account to login."
+			: `There is a problem with signing up: ${signUpError.message ?? updatingError.message ?? ""}`
+	return { success: !signUpError && !updatingError, message }
+}
+
 export const loginAction = async ({ params, request }) => {
 	var requestData = await request.json()
 	const { data, error } = await supabase.auth.signInWithPassword({
