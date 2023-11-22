@@ -7,6 +7,7 @@ import {
 	TextField,
 	Divider,
 	Modal,
+	CardHeader,
 } from "@mui/material"
 import Grid from "@mui/material/Grid"
 import { useEffect } from "react"
@@ -74,9 +75,11 @@ export default function RegisterModal({ modalOpen, handleModalToggle }) {
 				<Card sx={style}>
 					<fetcher.Form onSubmit={handleSubmit(submitForm)}>
 						<CardContent>
-							<Typography variant="h3" sx={{ p: 2 }}>
-								Register
-							</Typography>
+							<CardHeader
+								title="Register"
+								titleTypographyProps={{ align: "center", variant: "h4" }}
+								sx={{ p: 0 }}
+							/>
 							<Grid container item xs={12} spacing={2} p={2}>
 								<Grid item xs={12}>
 									<Controller

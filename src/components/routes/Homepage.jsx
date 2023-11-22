@@ -9,25 +9,15 @@ import {
 } from "@mui/material"
 import Grid from "@mui/material/Grid"
 import { Suspense } from "react"
-import { Await, Link, useLoaderData, useOutletContext } from "react-router-dom"
+import { Await, Link, useLoaderData, useOutletContext, useRouteLoaderData } from "react-router-dom"
 import PostCard from "../modules/PostCard"
+import PostForm from "../modules/PostForm"
 
 export default function Homepage() {
 	const data = useLoaderData()
-
-	var guestActions = (
-		<Link to="/register">
-			<Button size="small">Register</Button>
-		</Link>
-	)
-	var userActions = (
-		<Link to="/create">
-			<Button size="small">Add your thought!</Button>
-		</Link>
-	)
-
+	const { user } = useRouteLoaderData("root")
 	return (
-		<Grid container direction="column" p={2} justifyContent="center">
+		<Grid container direction="column" p={2} xs={6} gap={2} justifyContent="center">
 			<Grid item xs={8}>
 				<Card>
 					<CardContent sx={{ textAlign: "center" }}>
@@ -38,14 +28,8 @@ export default function Homepage() {
 					</CardContent>
 				</Card>
 			</Grid>
-			<Grid
-				container
-				spacing={2}
-				p={2}
-				direction="column"
-				justifyContent="center"
-				alignItems="center"
-			>
+			{user ? <PostForm /> : null}
+			<Grid container spacing={2} direction="column" justifyContent="center" alignItems="center">
 				<Suspense fallback={<CircularProgress />}>
 					<Await resolve={data.posts}>
 						{(data) => data.map((post, index) => <PostCard key={index} post={post} />)}

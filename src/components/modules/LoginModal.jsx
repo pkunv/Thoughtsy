@@ -8,6 +8,7 @@ import {
 	Divider,
 	Modal,
 	Box,
+	CardHeader,
 } from "@mui/material"
 import Grid from "@mui/material/Grid"
 import { useEffect, useRef } from "react"
@@ -74,9 +75,11 @@ export default function LoginModal({ modalOpen, handleModalToggle }) {
 				<Card sx={style}>
 					<fetcher.Form onSubmit={handleSubmit(submitForm)}>
 						<CardContent>
-							<Typography variant="h3" sx={{ p: 2 }}>
-								Log in
-							</Typography>
+							<CardHeader
+								title="Log in"
+								titleTypographyProps={{ align: "center", variant: "h4" }}
+								sx={{ p: 0 }}
+							/>
 							<Grid container item xs={12} spacing={2} p={2}>
 								<Grid item xs={12}>
 									<Controller

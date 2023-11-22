@@ -38,9 +38,16 @@ export const routes = [
 				action: logoutAction,
 			},
 			{
-				path: "/posts/:postId",
-				loader: postLoader,
-				element: <Post />,
+				path: "/posts",
+				loader: postsLoader,
+				element: null,
+				children: [
+					{
+						path: "/posts/:postId",
+						loader: postLoader,
+						element: <Post />,
+					},
+				],
 			},
 		],
 	},
