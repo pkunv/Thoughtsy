@@ -1,6 +1,7 @@
 import {
 	loginAction,
 	logoutAction,
+	postAction,
 	postLoader,
 	postsLoader,
 	userLoader,
@@ -9,6 +10,7 @@ import {
 import App from "./components/routes/App"
 import Homepage from "./components/routes/Homepage"
 import Post from "./components/routes/Post"
+import PostForm from "./components/modules/PostForm"
 
 export const routes = [
 	{
@@ -45,7 +47,13 @@ export const routes = [
 					{
 						path: "/posts/:postId",
 						loader: postLoader,
+						action: postAction,
 						element: <Post />,
+					},
+					{
+						path: "/posts/new",
+						action: postAction,
+						element: <PostForm />,
 					},
 				],
 			},

@@ -20,7 +20,7 @@ const initialFormState = {
 	content: "",
 }
 
-const PostForm = ({ post }) => {
+const PostForm = () => {
 	const {
 		control,
 		formState: { errors },
@@ -35,9 +35,9 @@ const PostForm = ({ post }) => {
 
 	const submitForm = (data) => {
 		fetcher.submit(data, {
-			method: "put",
+			method: "post",
 			encType: "application/json",
-			action: "/posts",
+			action: "/posts/new",
 		})
 	}
 
@@ -71,7 +71,7 @@ const PostForm = ({ post }) => {
 									variant="standard"
 									placeholder="Post content..."
 									helperText={errors?.content?.message}
-									error={errors?.name}
+									error={errors?.content}
 									fullWidth
 									sx={{ p: 2 }}
 								/>
