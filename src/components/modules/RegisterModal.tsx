@@ -12,8 +12,9 @@ import {
 import Grid from "@mui/material/Grid"
 import { useEffect } from "react"
 
-import { Controller, FormProvider, useForm } from "react-hook-form"
+import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form"
 import { useFetcher } from "react-router-dom"
+import { AppModalsState, SignUpValues } from "../../types"
 
 const initialFormState = {
 	email: "",
@@ -33,24 +34,25 @@ const style = {
 	boxShadow: 24,
 }
 
-export default function RegisterModal({ modalOpen, handleModalToggle }) {
+export default function RegisterModal({ modalOpen, handleModalToggle } : {modalOpen: AppModalsState, handleModalToggle: Function}) {
 	const toggleModal = () => {
 		handleModalToggle("register")
 	}
+	const methods = useForm<SignUpValues>({
+		mode: "onChange",
+		defaultValues: initialFormState,
+	})
 	const {
 		control,
-		formState: { errors },
+		formState: { errors, touchedFields },
 		handleSubmit,
 		reset,
 		setValue,
 		watch,
-	} = useForm({
-		mode: "onChange",
-		defaultValues: initialFormState,
-	})
+	} = methods;
 	const fetcher = useFetcher({ key: "register" })
 
-	const submitForm = (data) => {
+	const submitForm: SubmitHandler<SignUpValues> = (data) => {
 		fetcher.submit(data, {
 			method: "post",
 			encType: "application/json",
@@ -64,12 +66,7 @@ export default function RegisterModal({ modalOpen, handleModalToggle }) {
 
 	return (
 		<FormProvider
-			{...{
-				control,
-				setValue,
-				watch,
-				formState: { errors },
-			}}
+			{...methods}
 		>
 			<Modal open={modalOpen.register} onClose={toggleModal}>
 				<Card sx={style}>
@@ -102,7 +99,7 @@ export default function RegisterModal({ modalOpen, handleModalToggle }) {
 												autoComplete="email"
 												fullWidth
 												autoFocus
-												error={errors?.email}
+												error={!!errors?.email} // double negation to cast FieldError to type boolean
 												helperText={errors?.email?.message}
 											/>
 										)}
@@ -110,7 +107,7 @@ export default function RegisterModal({ modalOpen, handleModalToggle }) {
 								</Grid>
 								<Grid item xs={12}>
 									<Controller
-										name="display_name"
+										name="displayName"
 										control={control}
 										rules={{
 											required: { value: true, message: "Display name is required." },
@@ -120,12 +117,12 @@ export default function RegisterModal({ modalOpen, handleModalToggle }) {
 												{...field}
 												label="Display name"
 												placeholder="Enter your display name here..."
-												name="display_name"
-												autoComplete="display_name"
+												name="displayName"
+												autoComplete="displayName"
 												fullWidth
 												autoFocus
-												error={errors?.display_name}
-												helperText={errors?.display_name?.message}
+												error={!!errors?.displayName}
+												helperText={errors?.displayName?.message}
 											/>
 										)}
 									/>
@@ -144,7 +141,7 @@ export default function RegisterModal({ modalOpen, handleModalToggle }) {
 												autoComplete="password"
 												type="password"
 												fullWidth
-												error={errors?.password}
+												error={!!errors?.password}
 												helperText={errors?.password?.message}
 											/>
 										)}
@@ -168,7 +165,7 @@ export default function RegisterModal({ modalOpen, handleModalToggle }) {
 												autoComplete="repassword"
 												type="password"
 												fullWidth
-												error={errors?.repassword}
+												error={!!errors?.repassword}
 												helperText={errors?.repassword?.message}
 											/>
 										)}
