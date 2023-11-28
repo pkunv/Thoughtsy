@@ -1,17 +1,7 @@
 import { useEffect, useState } from "react"
 import { Box, CssBaseline, IconButton } from "@mui/material"
-import {
-	Outlet,
-	redirect,
-	useFetcher,
-	useFetchers,
-	useLoaderData,
-	useNavigate,
-	useNavigation,
-	useRevalidator,
-	useSubmit,
-} from "react-router-dom"
-import { SnackbarProvider, enqueueSnackbar } from "notistack"
+import { Outlet, useFetchers } from "react-router-dom";
+import { SnackbarProvider, closeSnackbar, enqueueSnackbar } from "notistack"
 import MainAppBar from "../modules/MainAppBar"
 import MainDrawer from "../modules/MainDrawer"
 import Footer from "../modules/Footer"
@@ -19,22 +9,26 @@ import LoginModal from "../modules/LoginModal"
 import CloseIcon from "@mui/icons-material/Close"
 import { navItemsGuest, navItemsUser } from "../../navItems"
 import RegisterModal from "../modules/RegisterModal"
+import { User } from "@supabase/supabase-js"
+import { AppModalsState } from "../../types";
+import {useLoaderData} from "react-router-typesafe"
+import { userLoader } from "../../dataActions";
 
 const App = () => {
-	const { user } = useLoaderData()
+	const {user} = useLoaderData<typeof userLoader>()
 	let fetchers = useFetchers()
 
 	const [drawerOpen, setDrawerOpen] = useState(false)
-	const drawerToggle = () => setDrawerOpen(!drawerOpen)
-	const [modalOpen, setModalOpen] = useState({
+	const toggleDrawer = () => setDrawerOpen(!drawerOpen)
+	const [modalOpen, setModalOpen] = useState<AppModalsState>({
 		login: false,
 		register: false,
 		deleteThought: false,
 	})
-	const handleModalToggle = (key) => {
+	const handleModalToggle = (key: string) => {
 		setModalOpen({
 			...modalOpen,
-			[key]: !modalOpen[key],
+			[key]: !modalOpen[key as keyof AppModalsState],
 		})
 	}
 	useEffect(() => {
@@ -94,13 +88,13 @@ const App = () => {
 			<RegisterModal modalOpen={modalOpen} handleModalToggle={handleModalToggle} />
 			<MainDrawer
 				navItems={navItems}
-				drawerToggle={drawerToggle}
+				toggleDrawer={toggleDrawer}
 				drawerOpen={drawerOpen}
 				handleModalToggle={handleModalToggle}
 			/>
 			<MainAppBar
 				navItems={navItems}
-				drawerToggle={drawerToggle}
+				toggleDrawer={toggleDrawer}
 				handleModalToggle={handleModalToggle}
 			/>
 			<Outlet />

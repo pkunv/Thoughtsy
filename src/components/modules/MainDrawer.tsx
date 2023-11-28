@@ -8,17 +8,18 @@ import {
 	ListItemButton,
 	ListItemText,
 } from "@mui/material"
+import { NavItem } from "../../types"
 
-const MainDrawer = ({ navItems, drawerOpen, toggleDrawer, handleModalToggle }) => {
+const MainDrawer = ({ navItems, drawerOpen, toggleDrawer, handleModalToggle } : {navItems: Array<NavItem>, drawerOpen: boolean, toggleDrawer: Function, handleModalToggle: Function}) => {
 	return (
 		<Drawer
 			variant="temporary"
 			open={drawerOpen}
-			onClose={toggleDrawer}
+			onClose={()=>{toggleDrawer()}}
 			ModalProps={{ keepMounted: true }}
 			sx={{ display: { xs: "block", sm: "none" } }}
 		>
-			<Box onClick={toggleDrawer}>
+			<Box onClick={()=>{toggleDrawer()}}>
 				<Typography variant="h3">Thoughtsy</Typography>
 				<Divider />
 				<List>
