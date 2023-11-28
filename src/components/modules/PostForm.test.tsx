@@ -4,15 +4,14 @@ import { routes } from "../../routes"
 import PostForm from "./PostForm"
 
 test("user should be able to see content input and submit button", async () => {
-	render(<PostForm />)
-	var contentInput = await screen.findByPlaceholderText("Post content...")
-	var submitBtn = await screen.findByRole("button", {
-		name: /submit/i,
-	})
+  render(<PostForm />)
+  var contentInput = await screen.findByPlaceholderText("Post content...")
+  var submitBtn = await screen.findByRole("button", {
+    name: /submit/i
+  })
 
-	// should not be visible after leaving modal
-	expect(contentInput).toBeVisible()
-	expect(submitBtn).toBeVisible()
+  expect(contentInput).toBeVisible()
+  expect(submitBtn).toBeVisible()
 })
 /*
 test("user should be able to create a new post", async() => {

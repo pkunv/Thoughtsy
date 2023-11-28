@@ -1,4 +1,3 @@
-
 import type { Params } from "react-router-dom"
 import { PostgrestError, User, createClient } from "@supabase/supabase-js"
 import { LoaderFunction, ActionFunction } from "react-router-dom"
@@ -34,8 +33,9 @@ export const registerAction = (async ({ request }: { request: Request }) => {
   var message =
     !signUpError && !updatingError
       ? "You signed up successfully, we sent you an e-mail, please verify your account to login."
-      : `There is a problem with signing up: ${signUpError?.message ?? updatingError?.message ?? ""
-      }`
+      : `There is a problem with signing up: ${
+          signUpError?.message ?? updatingError?.message ?? ""
+        }`
   return { success: !signUpError && !updatingError, message }
 }) satisfies ActionFunction
 
@@ -130,7 +130,7 @@ export const postLoader = (async ({ params }: PostLoaderParams) => {
     ),postLikes(count)`
       .replaceAll(/\n/g, "")
       .replaceAll(/\t/g, ""),
-    id: `eq.${params.postId}`,
+    id: `eq.${params.postId}`
   })
 
   type BadRequest = {
@@ -140,17 +140,17 @@ export const postLoader = (async ({ params }: PostLoaderParams) => {
 
   type UserResponse =
     | (Omit<Response, "json"> & {
-      status: 200
-      json: () => PostInterface | PromiseLike<PostInterface>
-    })
+        status: 200
+        json: () => PostInterface | PromiseLike<PostInterface>
+      })
     | (Omit<Response, "json"> & {
-      status: 400 | 404
-      json: () => BadRequest | PromiseLike<BadRequest>
-    })
+        status: 400 | 404
+        json: () => BadRequest | PromiseLike<BadRequest>
+      })
 
   const marshalResponse = (res: UserResponse) => {
     if (res.status === 200) return res.json()
-    //if (res.status === 400 || res.status === 404) return res.json()
+    if (res.status === 400 || res.status === 404) return res.json()
     //return Error('Unhandled code')
   }
 

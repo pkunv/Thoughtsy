@@ -4,14 +4,14 @@ export type PostLoaderParams = {
   params: Params<"postId">
 }
 
-export interface SignUpValues {
+export interface SignUpFormValues {
   email: string
   password: string
   repassword: string
   displayName: string
 }
 
-export interface SignInValues {
+export interface SignInFormValues {
   email: string
   password: string
 }
@@ -35,4 +35,8 @@ export interface NavItem {
   path: string
   name: string
   key: string
+}
+
+export interface PostFormValues {
+  content: string
 }
