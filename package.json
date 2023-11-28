@@ -31,6 +31,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.0.0",
+    "@types/jest": "^29.5.10",
     "@vitejs/plugin-react": "^4.1.0",
     "jsdom": "^22.1.0",
     "prettier": "3.1.0",

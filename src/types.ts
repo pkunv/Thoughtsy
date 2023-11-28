@@ -16,7 +16,7 @@ export interface SignInValues {
   password: string
 }
 
-export interface Post {
+export interface PostInterface {
   id: number
   content: string
   createdAt: string

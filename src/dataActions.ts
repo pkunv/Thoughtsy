@@ -1,9 +1,10 @@
-import { defer, json, redirect, useNavigate } from "react-router-dom"
+
 import type { Params } from "react-router-dom"
 import { PostgrestError, User, createClient } from "@supabase/supabase-js"
 import { LoaderFunction, ActionFunction } from "react-router-dom"
-import { Post, PostLoaderParams, SignInValues, SignUpValues } from "./types"
+import { PostInterface, PostLoaderParams, SignInValues, SignUpValues } from "./types"
 import { makeLoader } from "react-router-typesafe"
+import { defer } from "react-router-typesafe"
 
 const supabase = createClient(import.meta.env.VITE_SUPABASE_SITE, import.meta.env.VITE_SUPABASE_KEY)
 
@@ -33,9 +34,8 @@ export const registerAction = (async ({ request }: { request: Request }) => {
   var message =
     !signUpError && !updatingError
       ? "You signed up successfully, we sent you an e-mail, please verify your account to login."
-      : `There is a problem with signing up: ${
-          signUpError?.message ?? updatingError?.message ?? ""
-        }`
+      : `There is a problem with signing up: ${signUpError?.message ?? updatingError?.message ?? ""
+      }`
   return { success: !signUpError && !updatingError, message }
 }) satisfies ActionFunction
 
@@ -67,7 +67,7 @@ export const postAction = (async ({ request }: { request: Request }) => {
     return { success: !error, message }
   }
 
-  var formData = (await request.json()) as Post
+  var formData = (await request.json()) as PostInterface
   let successMessage,
     actionDescription = ""
   // returning response on every case is required since switch statement limits variable scope
@@ -130,7 +130,7 @@ export const postLoader = (async ({ params }: PostLoaderParams) => {
     ),postLikes(count)`
       .replaceAll(/\n/g, "")
       .replaceAll(/\t/g, ""),
-    id: `eq.${params.postId}`
+    id: `eq.${params.postId}`,
   })
 
   type BadRequest = {
@@ -140,17 +140,18 @@ export const postLoader = (async ({ params }: PostLoaderParams) => {
 
   type UserResponse =
     | (Omit<Response, "json"> & {
-        status: 201 | 200
-        json: () => Post | PromiseLike<Post>
-      })
+      status: 200
+      json: () => PostInterface | PromiseLike<PostInterface>
+    })
     | (Omit<Response, "json"> & {
-        status: 400
-        json: () => BadRequest | PromiseLike<BadRequest>
-      })
+      status: 400 | 404
+      json: () => BadRequest | PromiseLike<BadRequest>
+    })
 
   const marshalResponse = (res: UserResponse) => {
-    if (res.status === 201 || res.status === 200 || res.status === 400) return res.json()
-    return Error("Unhandled response code")
+    if (res.status === 200) return res.json()
+    //if (res.status === 400 || res.status === 404) return res.json()
+    //return Error('Unhandled code')
   }
 
   const responseHandler = (response: Response) => {
@@ -159,7 +160,7 @@ export const postLoader = (async ({ params }: PostLoaderParams) => {
   }
 
   return defer({
-    ...fetch(`${import.meta.env.VITE_SUPABASE_SITE}/rest/v1/posts?${searchParams}`, {
+    post: fetch(`${import.meta.env.VITE_SUPABASE_SITE}/rest/v1/posts?${searchParams}`, {
       method: "GET",
       headers: {
         Apikey: import.meta.env.VITE_SUPABASE_KEY,
