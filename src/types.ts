@@ -40,3 +40,8 @@ export interface NavItem {
 export interface PostFormValues {
   content: string
 }
+
+export type BadRequest = {
+  code: number
+  message: string
+}

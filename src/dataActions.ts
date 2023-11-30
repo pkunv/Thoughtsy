@@ -1,7 +1,13 @@
 import type { Params } from "react-router-dom"
 import { PostgrestError, User, createClient } from "@supabase/supabase-js"
 import { LoaderFunction, ActionFunction } from "react-router-dom"
-import { PostInterface, PostLoaderParams, SignInValues, SignUpValues } from "./types"
+import {
+  BadRequest,
+  PostInterface,
+  PostLoaderParams,
+  SignInFormValues,
+  SignUpFormValues
+} from "./types"
 import { makeLoader } from "react-router-typesafe"
 import { defer } from "react-router-typesafe"
 
@@ -20,7 +26,7 @@ export const logoutAction = (async () => {
 }) satisfies ActionFunction
 
 export const registerAction = (async ({ request }: { request: Request }) => {
-  let requestData = (await request.json()) as SignUpValues
+  let requestData = (await request.json()) as SignUpFormValues
   const { data, error: signUpError } = await supabase.auth.signUp({
     email: requestData.email,
     password: requestData.password
@@ -40,7 +46,7 @@ export const registerAction = (async ({ request }: { request: Request }) => {
 }) satisfies ActionFunction
 
 export const loginAction = (async ({ request }: { request: Request }) => {
-  var formData = (await request.json()) as SignInValues
+  var formData = (await request.json()) as SignInFormValues
   const { data, error } = await supabase.auth.signInWithPassword({
     email: formData.email,
     password: formData.password
@@ -52,7 +58,7 @@ export const loginAction = (async ({ request }: { request: Request }) => {
 }) satisfies ActionFunction
 
 export const postAction = (async ({ request }: { request: Request }) => {
-  const response = ({
+  const actionResponse = ({
     error,
     successMessage,
     actionDescription
@@ -76,20 +82,20 @@ export const postAction = (async ({ request }: { request: Request }) => {
       const { error } = await supabase.from("posts").insert({ content: formData.content })
       actionDescription = "submition"
       successMessage = "You submitted your post successfully!"
-      return response({ error, successMessage, actionDescription })
+      return actionResponse({ error, successMessage, actionDescription })
     }
     // i use patch method since we update only one element of data (`posts`.`content`) according to RFC 5789 guidelines
     case "PATCH": {
       const { error } = await supabase.from("posts").update({ content: formData.content })
       actionDescription = "edit"
       successMessage = "You edited your post successfully!"
-      return response({ error, successMessage, actionDescription })
+      return actionResponse({ error, successMessage, actionDescription })
     }
     case "DELETE": {
       const { error } = await supabase.from("posts").update({ active: 0 }).eq("id", formData.id)
       actionDescription = "deletion"
       successMessage = "You deleted your post successfully!"
-      return response({ error, successMessage, actionDescription })
+      return actionResponse({ error, successMessage, actionDescription })
     }
   }
 }) satisfies ActionFunction
@@ -100,14 +106,35 @@ for query building reference see: https://github.com/supabase/postgrest-js/tree/
 */
 export const postsLoader = (async () => {
   let searchParams = new URLSearchParams({
-    select: `id, content, type, source, createdAt,
+    select: `id, content, type, source, createdAt:created_at,
     ...users (
-      displayName
-    ),postLikes(count)`
+      displayName:display_name
+    ),postLikes:post_likes(count)`
       .replaceAll(/\n/g, "")
       .replaceAll(/\t/g, ""),
     active: `eq.1` // we want only active posts in feed, although accessing deleted posts should be enabled as in Twitter for example
   })
+
+  type UserResponse =
+    | (Omit<Response, "json"> & {
+        status: 200
+        json: () => Array<PostInterface> | PromiseLike<Array<PostInterface>>
+      })
+    | (Omit<Response, "json"> & {
+        status: 400 | 404
+        json: () => BadRequest | PromiseLike<BadRequest>
+      })
+
+  const marshalResponse = (res: UserResponse) => {
+    if (res.status === 200) return res.json()
+    if (res.status === 400 || res.status === 404) return res.json()
+    //return Error('Unhandled code')
+  }
+
+  const responseHandler = (response: Response) => {
+    const res = response as UserResponse
+    return marshalResponse(res)
+  }
 
   return defer({
     posts: fetch(`${import.meta.env.VITE_SUPABASE_SITE}/rest/v1/posts?${searchParams}`, {
@@ -116,27 +143,20 @@ export const postsLoader = (async () => {
         Apikey: import.meta.env.VITE_SUPABASE_KEY,
         Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_KEY}`
       }
-    }).then((res) => {
-      return res.json()
-    })
+    }).then((res) => responseHandler(res))
   })
 }) satisfies LoaderFunction
 
 export const postLoader = (async ({ params }: PostLoaderParams) => {
   let searchParams = new URLSearchParams({
-    select: `id, content, type, source, createdAt,
+    select: `id, content, type, source, createdAt:created_at,
     ...users (
-      displayName
-    ),postLikes(count)`
+      displayName:display_name
+    ),postLikes:post_likes(count)`
       .replaceAll(/\n/g, "")
       .replaceAll(/\t/g, ""),
     id: `eq.${params.postId}`
   })
-
-  type BadRequest = {
-    code: number
-    message: string
-  }
 
   type UserResponse =
     | (Omit<Response, "json"> & {
