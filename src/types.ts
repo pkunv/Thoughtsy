@@ -22,6 +22,7 @@ export interface PostInterface {
   createdAt: string
   displayName: string
   postLikes: Array<{ count: number }>
+  uid: string
 }
 
 export interface AppModalsState {

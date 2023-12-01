@@ -106,7 +106,7 @@ for query building reference see: https://github.com/supabase/postgrest-js/tree/
 */
 export const postsLoader = (async () => {
   let searchParams = new URLSearchParams({
-    select: `id, content, type, source, createdAt:created_at,
+    select: `id, content, type, source, createdAt:created_at, uid, 
     ...users (
       displayName:display_name
     ),postLikes:post_likes(count)`
@@ -149,7 +149,7 @@ export const postsLoader = (async () => {
 
 export const postLoader = (async ({ params }: PostLoaderParams) => {
   let searchParams = new URLSearchParams({
-    select: `id, content, type, source, createdAt:created_at,
+    select: `id, content, type, source, createdAt:created_at, uid,
     ...users (
       displayName:display_name
     ),postLikes:post_likes(count)`

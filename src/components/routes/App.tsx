@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Box, CssBaseline, IconButton } from "@mui/material"
+import { Box, Container, CssBaseline, IconButton } from "@mui/material"
 import { Outlet, useFetchers } from "react-router-dom"
 import { SnackbarProvider, closeSnackbar, enqueueSnackbar } from "notistack"
 import MainAppBar from "../modules/MainAppBar"
@@ -118,7 +118,9 @@ const App = () => {
         toggleDrawer={toggleDrawer}
         handleModalToggle={handleModalToggle}
       />
-      <Outlet />
+      <Container maxWidth="sm">
+        <Outlet />
+      </Container>
       <Footer />
     </Box>
   )
