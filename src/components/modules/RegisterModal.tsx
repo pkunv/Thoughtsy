@@ -68,6 +68,9 @@ export default function RegisterModal({
 
   useEffect(() => {
     if (fetcher.state === "loading" && fetcher.data.success) toggleModal()
+    if (fetcher.state === "idle" && fetcher.data?.success) {
+      methods.reset()
+    }
   }, [fetcher])
 
   return (

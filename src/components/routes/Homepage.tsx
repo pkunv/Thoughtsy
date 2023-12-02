@@ -21,10 +21,7 @@ export default function Homepage() {
   const data = useLoaderData<typeof postsLoader>()
   const { user } = useRouteLoaderData<typeof userLoader>("root")
   return (
-    <Stack
-      gap={2}
-      p={2}
-    >
+    <Stack gap={2}>
       <Card>
         <CardContent sx={{ textAlign: "center" }}>
           <Typography variant="h3">Welcome to Thoughtsy!</Typography>
@@ -37,8 +34,13 @@ export default function Homepage() {
         </CardContent>
       </Card>
 
-      {user ? <PostForm /> : null}
-
+      {user ? <PostForm post={undefined} /> : null}
+      <Typography
+        variant="h4"
+        textAlign="center"
+      >
+        Your best thoughts
+      </Typography>
       <Suspense fallback={<CircularProgress />}>
         <Await resolve={data.posts}>
           {(data) =>
@@ -46,6 +48,7 @@ export default function Homepage() {
               <PostCard
                 key={index}
                 post={post as PostInterface}
+                settingsMenu={false}
               />
             ))
           }

@@ -6,6 +6,7 @@ import {
   postsLoader,
   userLoader,
   registerAction,
+  postLikeAction
 } from "./dataActions"
 import App from "./components/routes/App"
 import Homepage from "./components/routes/Homepage"
@@ -13,6 +14,7 @@ import Post from "./components/routes/Post"
 import PostForm from "./components/modules/PostForm"
 import { redirect } from "react-router-typesafe"
 import ErrorRoute from "./components/routes/ErrorRoute"
+import LoginModal from "./components/modules/LoginModal"
 
 export const routes = [
   {
@@ -25,26 +27,28 @@ export const routes = [
       {
         element: <Homepage />,
         index: true,
-        loader: postsLoader,
+        loader: postsLoader
       },
       {
         path: "/login",
-        action: loginAction,
-        loader: async () => {
-          return redirect("/")
-        },
+        element: <Homepage />,
+        loader: postsLoader,
+        action: loginAction
       },
       {
         path: "/register",
-        action: registerAction,
+        element: <Homepage />,
+        loader: postsLoader,
+        action: registerAction
       },
       {
         path: "/logout",
-        action: logoutAction,
+        action: logoutAction
       },
       {
         path: "/posts",
         loader: postsLoader,
+        id: "posts",
         element: null,
         children: [
           {
@@ -52,14 +56,27 @@ export const routes = [
             loader: postLoader,
             action: postAction,
             element: <Post />,
+            children: [
+              {
+                path: "/posts/:postId/delete",
+                loader: postLoader,
+                action: postAction,
+                element: <Post />
+              },
+              {
+                path: "/posts/:postId/like",
+                action: postLikeAction,
+                element: null
+              }
+            ]
           },
           {
             path: "/posts/new",
             action: postAction,
-            element: <PostForm />,
-          },
-        ],
-      },
-    ],
-  },
+            element: <PostForm post={undefined} />
+          }
+        ]
+      }
+    ]
+  }
 ]

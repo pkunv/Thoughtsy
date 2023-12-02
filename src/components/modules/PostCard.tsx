@@ -15,16 +15,21 @@ import {
 } from "@mui/material"
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt"
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt"
-import { PostInterface } from "../../types"
+import { ContextType, PostInterface } from "../../types"
 import MoreVertIcon from "@mui/icons-material/MoreVert"
 import { useRouteLoaderData } from "react-router-typesafe"
 import { userLoader } from "../../dataActions"
 import React from "react"
 import EditIcon from "@mui/icons-material/Edit"
 import DeleteIcon from "@mui/icons-material/Delete"
+import { StyledLink } from "./StyledLink"
+import { useFetcher, useOutletContext } from "react-router-dom"
 
-const PostCard = ({ post }: { post: PostInterface }) => {
+const PostCard = ({ post, settingsMenu }: { post: PostInterface; settingsMenu: boolean }) => {
+  const { handleModalToggle, setPostDeleteId } = useOutletContext<ContextType>()
+
   const { user } = useRouteLoaderData<typeof userLoader>("root")
+  const fetcher = useFetcher({ key: "postLikeDelete" })
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -32,6 +37,15 @@ const PostCard = ({ post }: { post: PostInterface }) => {
   }
   const handleClose = () => {
     setAnchorEl(null)
+  }
+  const userLiked = post.likes.find((like) => user?.id === like.uid)
+
+  const likeFetcher = () => {
+    fetcher.submit(null, {
+      method: !userLiked ? "post" : "delete",
+      encType: "application/json",
+      action: `/posts/${post.id}/like`
+    })
   }
 
   return (
@@ -43,7 +57,7 @@ const PostCard = ({ post }: { post: PostInterface }) => {
           subheader={post.createdAt.replaceAll("T", " ").substr(0, 16)}
           aria-label="post"
           action={
-            user?.id === post.uid ? (
+            user?.id === post.uid && !settingsMenu ? (
               <IconButton
                 aria-label="post-settings"
                 onClick={handleClick}
@@ -66,12 +80,14 @@ const PostCard = ({ post }: { post: PostInterface }) => {
           <Checkbox
             icon={<ThumbUpOffAltIcon />}
             checkedIcon={<ThumbUpAltIcon />}
+            checked={!!userLiked}
+            onChange={likeFetcher}
           />
           <Typography
             variant="body2"
             color="text.secondary"
           >
-            {post.postLikes[0].count} likes
+            {post.likes.length} like{post.likes.length == 1 ? "" : "s"}
           </Typography>
         </CardActions>
       </Card>
@@ -85,10 +101,19 @@ const PostCard = ({ post }: { post: PostInterface }) => {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         <MenuItem onClick={handleClose}>
-          <EditIcon fontSize="small" /> Edit
+          <StyledLink to={`/posts/${post.id}`}>
+            <EditIcon fontSize="small" />
+            Edit
+          </StyledLink>
         </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <DeleteIcon fontSize="small" /> Delete
+        <MenuItem
+          onClick={() => {
+            handleModalToggle("postDelete")
+            setPostDeleteId(post.id)
+          }}
+        >
+          <DeleteIcon fontSize="small" />
+          Delete
         </MenuItem>
       </Menu>
     </>

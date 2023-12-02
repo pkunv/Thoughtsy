@@ -4,6 +4,7 @@ import { LoaderFunction, ActionFunction } from "react-router-dom"
 import {
   BadRequest,
   PostInterface,
+  PostLikeActionParams,
   PostLoaderParams,
   SignInFormValues,
   SignUpFormValues
@@ -61,16 +62,18 @@ export const postAction = (async ({ request }: { request: Request }) => {
   const actionResponse = ({
     error,
     successMessage,
-    actionDescription
+    actionDescription,
+    id
   }: {
     error: PostgrestError | null
     successMessage: string
     actionDescription: string
+    id: number | null
   }) => {
     const message = !error
       ? successMessage
       : `There is a problem with your post ${actionDescription}: ${error.message}`
-    return { success: !error, message }
+    return { success: !error, message, id }
   }
 
   var formData = (await request.json()) as PostInterface
@@ -79,37 +82,89 @@ export const postAction = (async ({ request }: { request: Request }) => {
   // returning response on every case is required since switch statement limits variable scope
   switch (request.method) {
     case "POST": {
-      const { error } = await supabase.from("posts").insert({ content: formData.content })
+      const { data, error } = await supabase
+        .from("posts")
+        .insert({ content: formData.content })
+        .select("id")
+        .single()
       actionDescription = "submition"
       successMessage = "You submitted your post successfully!"
-      return actionResponse({ error, successMessage, actionDescription })
+      return actionResponse({ error, successMessage, actionDescription, id: data?.id })
     }
     // i use patch method since we update only one element of data (`posts`.`content`) according to RFC 5789 guidelines
     case "PATCH": {
-      const { error } = await supabase.from("posts").update({ content: formData.content })
+      const { error } = await supabase
+        .from("posts")
+        .update({ content: formData.content })
+        .eq("id", formData.id)
       actionDescription = "edit"
       successMessage = "You edited your post successfully!"
-      return actionResponse({ error, successMessage, actionDescription })
+      return actionResponse({ error, successMessage, actionDescription, id: null })
     }
     case "DELETE": {
       const { error } = await supabase.from("posts").update({ active: 0 }).eq("id", formData.id)
       actionDescription = "deletion"
       successMessage = "You deleted your post successfully!"
-      return actionResponse({ error, successMessage, actionDescription })
+      return actionResponse({ error, successMessage, actionDescription, id: null })
     }
   }
 }) satisfies ActionFunction
 
+export const postLikeAction = async ({
+  request,
+  params
+}: {
+  request: Request
+  params: PostLikeActionParams
+}) => {
+  const actionResponse = ({
+    error,
+    successMessage,
+    actionDescription
+  }: {
+    error: PostgrestError | null
+    successMessage: string
+    actionDescription: string
+  }) => {
+    const message = !error
+      ? successMessage
+      : `There is a problem with your like ${actionDescription}: ${error.message}`
+    return { success: !error, message }
+  }
+  let successMessage,
+    actionDescription = ""
+  // returning response on every case is required since switch statement limits variable scope
+  switch (request.method) {
+    case "POST": {
+      const { error } = await supabase.from("post_likes").insert({ post_id: params.postId })
+      actionDescription = "submition"
+      successMessage = "You liked this post!"
+      return actionResponse({ error, successMessage, actionDescription })
+    }
+    case "DELETE": {
+      // executing function that handles post like deletion for more safety
+      const { error } = await supabase
+        .from("post_likes")
+        .delete()
+        .eq("post_id", params.postId)
+        .eq("uid", (await supabase.auth.getUser()).data.user?.id)
+      actionDescription = "deletion"
+      successMessage = "You unliked this post."
+      return actionResponse({ error, successMessage, actionDescription })
+    }
+  }
+}
+
 /*
-custom fetch handling is needed as supabase do not support async data fetching, only await is supported in API
+custom fetch handling is needed as supabase do not support async data fetching, only await is supported in their API
 for query building reference see: https://github.com/supabase/postgrest-js/tree/f91aa2944f52da3aefc77a6712990731fff16252/src
 */
 export const postsLoader = (async () => {
   let searchParams = new URLSearchParams({
-    select: `id, content, type, source, createdAt:created_at, uid, 
+    select: `id, content, type, source, createdAt:created_at, uid, active,
     ...users (
       displayName:display_name
-    ),postLikes:post_likes(count)`
+    ),likes:post_likes(uid, ...users(displayName:display_name))`
       .replaceAll(/\n/g, "")
       .replaceAll(/\t/g, ""),
     active: `eq.1` // we want only active posts in feed, although accessing deleted posts should be enabled as in Twitter for example
@@ -149,10 +204,10 @@ export const postsLoader = (async () => {
 
 export const postLoader = (async ({ params }: PostLoaderParams) => {
   let searchParams = new URLSearchParams({
-    select: `id, content, type, source, createdAt:created_at, uid,
+    select: `id, content, type, source, createdAt:created_at, uid, active,
     ...users (
       displayName:display_name
-    ),postLikes:post_likes(count)`
+    ),likes:post_likes(uid, ...users(displayName:display_name))`
       .replaceAll(/\n/g, "")
       .replaceAll(/\t/g, ""),
     id: `eq.${params.postId}`

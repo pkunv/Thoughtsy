@@ -10,6 +10,7 @@ const color = red[500]
 
 export default function ErrorRoute() {
   const error: unknown = useRouteError()
+  console.log(error)
   return (
     <Box textAlign="center">
       <Typography

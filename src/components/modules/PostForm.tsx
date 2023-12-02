@@ -15,14 +15,15 @@ import {
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt"
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt"
 import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form"
-import { PostFormValues } from "../../types"
-import { useFetcher } from "react-router-dom"
+import { PostFormValues, PostInterface } from "../../types"
+import { useFetcher, useNavigate } from "react-router-dom"
+import { useEffect } from "react"
 
 const initialFormState = {
   content: ""
 }
 
-const PostForm = () => {
+const PostForm = ({ post }: { post: PostInterface | null | undefined }) => {
   const methods = useForm({
     mode: "onChange",
     defaultValues: initialFormState
@@ -35,15 +36,29 @@ const PostForm = () => {
     setValue,
     watch
   } = methods
-  const fetcher = useFetcher({ key: "post" })
+  const editing = !!post
+  const fetcher = useFetcher({ key: !editing ? "postCreate" : "postUpdate" })
+
+  const navigate = useNavigate()
 
   const submitForm: SubmitHandler<PostFormValues> = (data) => {
     fetcher.submit(data, {
-      method: "post",
+      method: editing ? "patch" : "post",
       encType: "application/json",
-      action: "/posts/new"
+      action: editing ? `/posts/${post.id}` : "/posts/new"
     })
   }
+
+  useEffect(() => {
+    if (fetcher.state === "loading" && fetcher.data?.success && !editing) {
+      methods.reset()
+      navigate(`/posts/${fetcher.data?.id}`)
+    }
+  }, [fetcher])
+
+  useEffect(() => {
+    if (editing) reset({ ...post })
+  }, [methods.reset])
 
   return (
     <FormProvider {...methods}>
@@ -51,7 +66,7 @@ const PostForm = () => {
         <Grid item>
           <Card>
             <CardHeader
-              title="Create a new post"
+              title={editing ? "Edit this post" : "Create a new post"}
               titleTypographyProps={{ align: "center", variant: "h5" }}
               sx={{ p: 2 }}
             />

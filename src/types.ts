@@ -4,6 +4,13 @@ export type PostLoaderParams = {
   params: Params<"postId">
 }
 
+export type PostLikeActionParams = Params<"postId">
+
+export type ContextType = {
+  setPostDeleteId: Function
+  handleModalToggle: Function
+}
+
 export interface SignUpFormValues {
   email: string
   password: string
@@ -20,15 +27,17 @@ export interface PostInterface {
   id: number
   content: string
   createdAt: string
+  modifiedAt: string
   displayName: string
-  postLikes: Array<{ count: number }>
+  likes: Array<{ uid: string; displayName: string }>
   uid: string
+  active: boolean
 }
 
 export interface AppModalsState {
   login: boolean
   register: boolean
-  deleteThought: boolean
+  postDelete: boolean
 }
 
 export interface NavItem {
