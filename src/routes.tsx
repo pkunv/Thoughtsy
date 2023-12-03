@@ -1,13 +1,3 @@
-import {
-  loginAction,
-  logoutAction,
-  postAction,
-  postLoader,
-  postsLoader,
-  userLoader,
-  registerAction,
-  postLikeAction
-} from "./dataActions"
 import App from "./components/routes/App"
 import Homepage from "./components/routes/Homepage"
 import Post from "./components/routes/Post"
@@ -15,6 +5,15 @@ import PostForm from "./components/modules/PostForm"
 import { redirect } from "react-router-typesafe"
 import ErrorRoute from "./components/routes/ErrorRoute"
 import LoginModal from "./components/modules/LoginModal"
+import { RouteObject } from "react-router"
+import {
+  loginAction,
+  registerAction,
+  logoutAction,
+  postAction,
+  postLikeAction
+} from "./actionFunctions"
+import { userLoader, postsLoader, postLoader } from "./loaderFunctions"
 
 export const routes = [
   {
@@ -79,4 +78,4 @@ export const routes = [
       }
     ]
   }
-]
+] as Array<RouteObject>

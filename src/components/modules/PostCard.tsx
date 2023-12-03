@@ -18,7 +18,7 @@ import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt"
 import { ContextType, PostInterface } from "../../types"
 import MoreVertIcon from "@mui/icons-material/MoreVert"
 import { useRouteLoaderData } from "react-router-typesafe"
-import { userLoader } from "../../dataActions"
+import { userLoader } from "../../loaderFunctions"
 import React from "react"
 import EditIcon from "@mui/icons-material/Edit"
 import DeleteIcon from "@mui/icons-material/Delete"
@@ -50,12 +50,20 @@ const PostCard = ({ post, settingsMenu }: { post: PostInterface; settingsMenu: b
 
   return (
     <>
-      <Card sx={{ width: 1 }}>
+      <Card
+        sx={{ width: 1 }}
+        aria-label="post"
+      >
         <CardHeader
           avatar={<Avatar>{post.displayName[0]}</Avatar>}
           title={post.displayName}
-          subheader={post.createdAt.replaceAll("T", " ").substr(0, 16)}
-          aria-label="post"
+          subheader={
+            post.createdAt.replaceAll("T", " ").substr(0, 16) +
+            (post.modifiedAt !== null
+              ? ` | Modified: ${post.modifiedAt.replaceAll("T", " ").substr(0, 16)}`
+              : "")
+          }
+          aria-label="post-header"
           action={
             user?.id === post.uid && !settingsMenu ? (
               <IconButton

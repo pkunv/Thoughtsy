@@ -1,21 +1,10 @@
-import {
-  Card,
-  Typography,
-  CardContent,
-  CircularProgress,
-  CardActions,
-  CardHeader,
-  Checkbox,
-  Divider,
-  Stack
-} from "@mui/material"
-import Grid from "@mui/material/Grid"
+import { Card, Typography, CardContent, CircularProgress, Stack } from "@mui/material"
 import { Suspense } from "react"
 import PostCard from "../modules/PostCard"
 import PostForm from "../modules/PostForm"
-import { postsLoader, userLoader } from "../../dataActions"
 import { useRouteLoaderData, useLoaderData, Await } from "react-router-typesafe"
 import { PostInterface } from "../../types"
+import { postsLoader, userLoader } from "../../loaderFunctions"
 
 export default function Homepage() {
   const data = useLoaderData<typeof postsLoader>()

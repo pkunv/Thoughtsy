@@ -20,9 +20,8 @@ import RegisterModal from "../modules/RegisterModal"
 import { AppModalsState, NavItem } from "../../types"
 import type { ContextType } from "../../types"
 import { useLoaderData } from "react-router-typesafe"
-import { userLoader } from "../../dataActions"
-
 import DeletePostModal from "../modules/PostDeleteModal"
+import { userLoader } from "../../loaderFunctions"
 
 const App = () => {
   const { user } = useLoaderData<typeof userLoader>()

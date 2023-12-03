@@ -124,7 +124,7 @@ execute function update_post_modified_at();
 
 ```
 VITE_SUPABASE_KEY=supabase_key_here
-VITE_SUPABASE_SITE=supabase_site_here
+VITE_SUPABASE_URL=supabase_site_here
 VITE_SUPABASE_TEST_EMAIL=test@user.com
 VITE_SUPABASE_TEST_PASSWORD=123456
 VITE_TEST_SIGN_UP=0

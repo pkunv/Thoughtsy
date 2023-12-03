@@ -3,15 +3,15 @@ import { RouterProvider, createMemoryRouter } from "react-router-dom"
 import { routes } from "../../routes"
 
 test("app should render posts", async () => {
-	const router = createMemoryRouter(routes, {
-		initialEntries: ["/"],
-		initialIndex: 1,
-	})
+  const router = createMemoryRouter(routes, {
+    initialEntries: ["/"],
+    initialIndex: 1
+  })
 
-	render(<RouterProvider router={router} />)
+  render(<RouterProvider router={router} />)
 
-	var rows = await screen.findAllByRole("post")
-	expect(rows.length > 0).toBeTruthy()
+  var rows = await screen.findAllByLabelText("post")
+  expect(rows.length > 0).toBeTruthy()
 })
 
 /*

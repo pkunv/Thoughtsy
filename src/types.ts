@@ -27,7 +27,7 @@ export interface PostInterface {
   id: number
   content: string
   createdAt: string
-  modifiedAt: string
+  modifiedAt: string | null
   displayName: string
   likes: Array<{ uid: string; displayName: string }>
   uid: string
