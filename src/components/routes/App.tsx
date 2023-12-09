@@ -1,37 +1,36 @@
-import { useEffect, useState } from "react"
+import CloseIcon from "@mui/icons-material/Close"
 import { Box, Container, CssBaseline, IconButton } from "@mui/material"
-import {
-  Outlet,
-  To,
-  useFetchers,
-  useNavigate,
-  useNavigation,
-  useResolvedPath
-} from "react-router-dom"
 import { SnackbarProvider, closeSnackbar, enqueueSnackbar } from "notistack"
-import MainAppBar from "../modules/MainAppBar"
-import MainDrawer from "../modules/MainDrawer"
+import { useEffect, useState } from "react"
+import { Outlet, useFetchers, useLocation, useNavigate, useResolvedPath } from "react-router-dom"
+import { useLoaderData } from "react-router-typesafe"
+import { userLoader } from "../../loaderFunctions"
+import { navItemsGuest, navItemsUser } from "../../navItems"
+import type { ContextType } from "../../types"
+import { AppModalsState, NavItem } from "../../types"
+import useMatchRoute from "../hooks/useMatchRoute"
+import FastNavButtons from "../modules/FastNavButtons"
 import Footer from "../modules/Footer"
 import LoginModal from "../modules/LoginModal"
-import CloseIcon from "@mui/icons-material/Close"
-import { navItemsGuest, navItemsUser } from "../../navItems"
-import RegisterModal from "../modules/RegisterModal"
-
-import { AppModalsState, NavItem } from "../../types"
-import type { ContextType } from "../../types"
-import { useLoaderData } from "react-router-typesafe"
+import MainAppBar from "../modules/MainAppBar"
+import MainDrawer from "../modules/MainDrawer"
 import DeletePostModal from "../modules/PostDeleteModal"
-import { userLoader } from "../../loaderFunctions"
+import RegisterModal from "../modules/RegisterModal"
 
 const App = () => {
   const { user } = useLoaderData<typeof userLoader>()
   let fetchers = useFetchers()
+  let currentRoute = useMatchRoute()
+
   // useResolvedPath accepts empty "To" parameter as current location
   // @ts-ignore
   const resolvedPath = useResolvedPath()
   const navigate = useNavigate()
+  let location = useLocation()
+
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [postDeleteId, setPostDeleteId] = useState(null)
+  const [navItems, setNavItems] = useState(user ? navItemsUser : navItemsGuest)
 
   const toggleDrawer = () => setDrawerOpen(!drawerOpen)
   const [modalOpen, setModalOpen] = useState<AppModalsState>({
@@ -52,7 +51,12 @@ const App = () => {
       [key]: !modalOpen[key as keyof AppModalsState]
     })
   }
-  // action snackbar fetchers
+
+  useEffect(() => {
+    document.title = `${currentRoute.name ? currentRoute.name + " \\ " : ""} Thoughtsy`
+  }, [currentRoute])
+
+  // user interactions snackbar fetchers
   useEffect(() => {
     var userFetchers = fetchers.filter((fetcher) => {
       return fetcher.key == "login" || "logout"
@@ -80,8 +84,6 @@ const App = () => {
     )
     if (modalNavItem) handleModalToggle(modalNavItem.key)
   }, [resolvedPath])
-
-  const [navItems, setNavItems] = useState(user ? navItemsUser : navItemsGuest)
 
   return (
     <Box
@@ -132,6 +134,7 @@ const App = () => {
         maxWidth="sm"
         sx={{ p: 2 }}
       >
+        {location?.pathname !== "/" ? <FastNavButtons /> : null}
         <Outlet context={{ setPostDeleteId, handleModalToggle } satisfies ContextType} />
       </Container>
       <Footer />

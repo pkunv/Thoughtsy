@@ -1,11 +1,55 @@
-import { createClient } from "@supabase/supabase-js"
 import { LoaderFunction } from "react-router-dom"
-import { BadRequest, PostInterface, PostLoaderParams } from "./types"
 import { defer } from "react-router-typesafe"
 import { supabase } from "./supabase"
+import { BadRequest, PostInterface, PostLoaderParams, UserProfileLoaderParams } from "./types"
 
 export const userLoader = (async () => {
   return { ...(await supabase.auth.getUser()).data }
+}) satisfies LoaderFunction
+
+export const userProfileLoader = (async ({ params }: UserProfileLoaderParams) => {
+  let searchParams = new URLSearchParams({
+    select:
+      `uid, displayName:display_name, createdAt:created_atcontent, type, source, createdAt:created_at, uid, active, modifiedAt:modified_at,
+    ...users (
+      count
+    ),likes:post_likes(uid, ...users(displayName:display_name))`
+        .replaceAll(/\n/g, "")
+        .replaceAll(/\t/g, ""),
+    id: `eq.${params.userId}`
+  })
+
+  type UserResponse =
+    | (Omit<Response, "json"> & {
+        status: 200
+        json: () => PostInterface | PromiseLike<PostInterface>
+      })
+    | (Omit<Response, "json"> & {
+        status: 400 | 404
+        json: () => BadRequest | PromiseLike<BadRequest>
+      })
+
+  const marshalResponse = (res: UserResponse) => {
+    if (res.status === 200) return res.json()
+    if (res.status === 400 || res.status === 404) return res.json()
+    //return Error('Unhandled code')
+  }
+
+  const responseHandler = (response: Response) => {
+    const res = response as UserResponse
+    return marshalResponse(res)
+  }
+
+  return defer({
+    post: fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/posts?${searchParams}`, {
+      method: "GET",
+      headers: {
+        Apikey: import.meta.env.VITE_SUPABASE_KEY,
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_KEY}`,
+        Accept: "application/vnd.pgrst.object+json" // .single() equivalent
+      }
+    }).then((res) => responseHandler(res))
+  })
 }) satisfies LoaderFunction
 
 /*

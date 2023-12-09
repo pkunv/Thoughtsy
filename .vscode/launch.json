@@ -1,0 +1,13 @@
+{
+  "configurations": [
+    {
+      "name": "Attach to Chrome",
+      "port": 9229,
+      "urlFilter": "http://localhost:3000/*",
+      "request": "attach",
+      "type": "chrome",
+      "webRoot": "${workspaceFolder}"
+    },
+
+  ]
+}

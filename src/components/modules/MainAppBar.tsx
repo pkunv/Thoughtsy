@@ -41,7 +41,6 @@ const MainAppBar = ({
               <StyledLink
                 to={item.path}
                 key={item.key}
-                unstable_viewTransition
               >
                 <Button
                   sx={{ ml: 1, mr: 1 }}

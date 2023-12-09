@@ -4,6 +4,10 @@ export type PostLoaderParams = {
   params: Params<"postId">
 }
 
+export type UserProfileLoaderParams = {
+  params: Params<"userId">
+}
+
 export type PostLikeActionParams = Params<"postId">
 
 export type ContextType = {
@@ -21,6 +25,16 @@ export interface SignUpFormValues {
 export interface SignInFormValues {
   email: string
   password: string
+}
+
+export interface UserInterface {
+  uid: string
+  displayName: string
+  email: string
+  postCount: number | null | undefined
+  createdAt: string
+  modifiedAt: string
+  active: boolean
 }
 
 export interface PostInterface {
@@ -54,4 +68,18 @@ export interface PostFormValues {
 export type BadRequest = {
   code: number
   message: string
+}
+
+export enum PermissionTypes {
+  Public = "public",
+  User = "user"
+}
+
+export interface RouteInfo {
+  key: string
+  name: string
+  navItem: boolean
+  path: string
+  accesableFor: Array<PermissionTypes>
+  type: "modal" | "route" | "fetcher"
 }

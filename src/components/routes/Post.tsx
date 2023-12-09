@@ -1,13 +1,11 @@
 import { Box, Button, CircularProgress, Stack, Typography } from "@mui/material"
-import Grid from "@mui/material/Grid"
 import { Suspense } from "react"
-import PostCard from "../modules/PostCard"
-import { useLoaderData, Await, useRouteLoaderData } from "react-router-typesafe"
-import { PostInterface } from "../../types"
-import PostForm from "../modules/PostForm"
 import { useOutletContext } from "react-router-dom"
-import { ContextType } from "../../types"
+import { Await, useLoaderData, useRouteLoaderData } from "react-router-typesafe"
 import { postLoader, userLoader } from "../../loaderFunctions"
+import { ContextType, PostInterface } from "../../types"
+import PostCard from "../modules/PostCard"
+import PostForm from "../modules/PostForm"
 
 export default function Post() {
   const { handleModalToggle, setPostDeleteId } = useOutletContext<ContextType>()

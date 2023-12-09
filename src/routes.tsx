@@ -1,23 +1,20 @@
-import App from "./components/routes/App"
-import Homepage from "./components/routes/Homepage"
-import Post from "./components/routes/Post"
-import PostForm from "./components/modules/PostForm"
-import { redirect } from "react-router-typesafe"
-import ErrorRoute from "./components/routes/ErrorRoute"
-import LoginModal from "./components/modules/LoginModal"
 import { RouteObject } from "react-router"
 import {
   loginAction,
-  registerAction,
   logoutAction,
   postAction,
-  postLikeAction
+  postLikeAction,
+  registerAction
 } from "./actionFunctions"
-import { userLoader, postsLoader, postLoader } from "./loaderFunctions"
+import PostForm from "./components/modules/PostForm"
+import App from "./components/routes/App"
+import ErrorRoute from "./components/routes/ErrorRoute"
+import Homepage from "./components/routes/Homepage"
+import Post from "./components/routes/Post"
+import { postLoader, postsLoader, userLoader } from "./loaderFunctions"
 
 export const routes = [
   {
-    path: "/",
     element: <App />,
     id: "root",
     loader: userLoader,
@@ -25,6 +22,7 @@ export const routes = [
     children: [
       {
         element: <Homepage />,
+        id: "homepage",
         index: true,
         loader: postsLoader
       },
@@ -48,7 +46,6 @@ export const routes = [
         path: "/posts",
         loader: postsLoader,
         id: "posts",
-        element: null,
         children: [
           {
             path: "/posts/:postId",

@@ -44,7 +44,7 @@ You can access local Supabase environment on `http://localhost:54323/`
 
 ## 🚀 Deploy
 
-1. Configure .env.production file according to .env.production-example (you need to pass the URL and api-key)
+1. Configure .env. file according to .env-example (you need to pass the URL and api-key)
 2. Run `npm run build` to build and then drop /dist into Netlify bucket
 
 ## 🙏 Useful documentations

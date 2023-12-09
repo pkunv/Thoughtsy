@@ -69,7 +69,7 @@ INSERT INTO
 -- update test display names of test users
 UPDATE
   public.users
-    set display_name = au.email, created_at = au.created_at
+    set display_name = INITCAP(SPLIT_PART(au.email,'@',1)), created_at = au.created_at
   from auth.users au where uid = au.id; 
 
 -- create public posts table
