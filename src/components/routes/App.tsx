@@ -5,10 +5,10 @@ import { useEffect, useState } from "react"
 import { Outlet, useFetchers, useLocation, useNavigate, useResolvedPath } from "react-router-dom"
 import { useLoaderData } from "react-router-typesafe"
 import { userLoader } from "../../loaderFunctions"
-import { navItemsGuest, navItemsUser } from "../../navItems"
+import { routesInfo } from "../../routesInfo"
 import type { ContextType } from "../../types"
-import { AppModalsState, NavItem } from "../../types"
-import useMatchRoute from "../hooks/useMatchRoute"
+import { AccessabilityTypes, AppModalsState, NavItem } from "../../types"
+import { useDocumentTitle } from "../hooks/useDocumentTitle"
 import FastNavButtons from "../modules/FastNavButtons"
 import Footer from "../modules/Footer"
 import LoginModal from "../modules/LoginModal"
@@ -20,7 +20,7 @@ import RegisterModal from "../modules/RegisterModal"
 const App = () => {
   const { user } = useLoaderData<typeof userLoader>()
   let fetchers = useFetchers()
-  let currentRoute = useMatchRoute()
+  let documentTitle = useDocumentTitle()
 
   // useResolvedPath accepts empty "To" parameter as current location
   // @ts-ignore
@@ -30,7 +30,12 @@ const App = () => {
 
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [postDeleteId, setPostDeleteId] = useState(null)
-  const [navItems, setNavItems] = useState(user ? navItemsUser : navItemsGuest)
+
+  // initializing nav items
+  const accessabilityType = user ? AccessabilityTypes.User : AccessabilityTypes.Public
+  const [navItems, setNavItems] = useState(
+    routesInfo.filter((route) => route.accessableFor.includes(accessabilityType) && route.navItem)
+  )
 
   const toggleDrawer = () => setDrawerOpen(!drawerOpen)
   const [modalOpen, setModalOpen] = useState<AppModalsState>({
@@ -52,10 +57,6 @@ const App = () => {
     })
   }
 
-  useEffect(() => {
-    document.title = `${currentRoute.name ? currentRoute.name + " \\ " : ""} Thoughtsy`
-  }, [currentRoute])
-
   // user interactions snackbar fetchers
   useEffect(() => {
     var userFetchers = fetchers.filter((fetcher) => {
@@ -74,7 +75,9 @@ const App = () => {
 
   // nav items usestate according to user state
   useEffect(() => {
-    setNavItems(user ? navItemsUser : navItemsGuest)
+    setNavItems(
+      routesInfo.filter((route) => route.accessableFor.includes(accessabilityType) && route.navItem)
+    )
   }, [user])
 
   // modal routes initialization

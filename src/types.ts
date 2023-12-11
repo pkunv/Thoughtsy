@@ -70,7 +70,7 @@ export type BadRequest = {
   message: string
 }
 
-export enum PermissionTypes {
+export enum AccessabilityTypes {
   Public = "public",
   User = "user"
 }
@@ -80,6 +80,6 @@ export interface RouteInfo {
   name: string
   navItem: boolean
   path: string
-  accesableFor: Array<PermissionTypes>
+  accessableFor: Array<AccessabilityTypes>
   type: "modal" | "route" | "fetcher"
 }

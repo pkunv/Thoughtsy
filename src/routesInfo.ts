@@ -1,8 +1,8 @@
-import { PermissionTypes, RouteInfo } from "./types"
+import { AccessabilityTypes, RouteInfo } from "./types"
 
 export const routesInfo = [
   {
-    accesableFor: [PermissionTypes.Public, PermissionTypes.User],
+    accessableFor: [AccessabilityTypes.Public, AccessabilityTypes.User],
     key: "home",
     name: "Homepage",
     navItem: true,
@@ -10,7 +10,7 @@ export const routesInfo = [
     type: "route"
   },
   {
-    accesableFor: [PermissionTypes.Public],
+    accessableFor: [AccessabilityTypes.Public],
     key: "login",
     name: "Log in",
     navItem: true,
@@ -18,7 +18,7 @@ export const routesInfo = [
     type: "modal"
   },
   {
-    accesableFor: [PermissionTypes.Public],
+    accessableFor: [AccessabilityTypes.Public],
     key: "register",
     name: "Register",
     navItem: true,
@@ -26,7 +26,7 @@ export const routesInfo = [
     type: "modal"
   },
   {
-    accesableFor: [PermissionTypes.Public, PermissionTypes.User],
+    accessableFor: [AccessabilityTypes.Public, AccessabilityTypes.User],
     key: "about",
     name: "About",
     navItem: true,
@@ -34,7 +34,7 @@ export const routesInfo = [
     type: "route"
   },
   {
-    accesableFor: [PermissionTypes.User],
+    accessableFor: [AccessabilityTypes.User],
     key: "profile",
     name: "Profile",
     navItem: true,
@@ -42,7 +42,7 @@ export const routesInfo = [
     type: "route"
   },
   {
-    accesableFor: [PermissionTypes.User],
+    accessableFor: [AccessabilityTypes.User],
     key: "feed",
     name: "Feed",
     navItem: true,
@@ -50,7 +50,7 @@ export const routesInfo = [
     type: "route"
   },
   {
-    accesableFor: [PermissionTypes.User],
+    accessableFor: [AccessabilityTypes.User],
     key: "logout",
     name: "Logout",
     navItem: true,
@@ -58,7 +58,7 @@ export const routesInfo = [
     type: "fetcher"
   },
   {
-    accesableFor: [PermissionTypes.Public, PermissionTypes.User],
+    accessableFor: [AccessabilityTypes.Public, AccessabilityTypes.User],
     key: "posts",
     name: "Posts",
     navItem: false,
@@ -66,7 +66,7 @@ export const routesInfo = [
     type: "route"
   },
   {
-    accesableFor: [PermissionTypes.User],
+    accessableFor: [AccessabilityTypes.User],
     key: "new-post",
     name: "New post",
     navItem: false,
@@ -74,7 +74,7 @@ export const routesInfo = [
     type: "route"
   },
   {
-    accesableFor: [PermissionTypes.Public, PermissionTypes.User],
+    accessableFor: [AccessabilityTypes.Public, AccessabilityTypes.User],
     key: "post",
     name: "Post",
     navItem: false,

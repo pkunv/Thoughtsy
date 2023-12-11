@@ -4,7 +4,8 @@ import useMatchRoute from "./useMatchRoute"
 export function useDocumentTitle() {
   let route = useMatchRoute()
   useEffect(() => {
-    document.title = `${route.name} \\ Thoughtsy` ?? "Thoughtsy"
-  }, [location.pathname])
+    document.title = `${route.name ? route.name + " \\ " : ""} Thoughtsy`
+  }, [route])
+
   return document.title
 }
