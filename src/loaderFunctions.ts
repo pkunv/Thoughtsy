@@ -1,28 +1,32 @@
 import { LoaderFunction } from "react-router-dom"
 import { defer } from "react-router-typesafe"
 import { supabase } from "./supabase"
-import { BadRequest, PostInterface, PostLoaderParams, UserProfileLoaderParams } from "./types"
+import {
+  BadRequest,
+  PostInterface,
+  PostLoaderParams,
+  UserProfileInterface,
+  UserProfileLoaderParams
+} from "./types"
 
 export const userLoader = (async () => {
   return { ...(await supabase.auth.getUser()).data }
 }) satisfies LoaderFunction
 
 export const userProfileLoader = (async ({ params }: UserProfileLoaderParams) => {
+  let userId = params.userId ?? (await supabase.auth.getUser()).data.user?.id
   let searchParams = new URLSearchParams({
     select:
-      `uid, displayName:display_name, createdAt:created_atcontent, type, source, createdAt:created_at, uid, active, modifiedAt:modified_at,
-    ...users (
-      count
-    ),likes:post_likes(uid, ...users(displayName:display_name))`
+      `uid, displayName: display_name, createdAt: created_at, modifiedAt: modified_at, postCount:posts(count)`
         .replaceAll(/\n/g, "")
         .replaceAll(/\t/g, ""),
-    id: `eq.${params.userId}`
+    uid: `eq.${userId}`
   })
 
   type UserResponse =
     | (Omit<Response, "json"> & {
         status: 200
-        json: () => PostInterface | PromiseLike<PostInterface>
+        json: () => UserProfileInterface | PromiseLike<UserProfileInterface>
       })
     | (Omit<Response, "json"> & {
         status: 400 | 404
@@ -32,7 +36,6 @@ export const userProfileLoader = (async ({ params }: UserProfileLoaderParams) =>
   const marshalResponse = (res: UserResponse) => {
     if (res.status === 200) return res.json()
     if (res.status === 400 || res.status === 404) return res.json()
-    //return Error('Unhandled code')
   }
 
   const responseHandler = (response: Response) => {
@@ -41,7 +44,7 @@ export const userProfileLoader = (async ({ params }: UserProfileLoaderParams) =>
   }
 
   return defer({
-    post: fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/posts?${searchParams}`, {
+    userProfile: fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/users?${searchParams}`, {
       method: "GET",
       headers: {
         Apikey: import.meta.env.VITE_SUPABASE_KEY,

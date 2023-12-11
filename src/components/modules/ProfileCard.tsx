@@ -1,15 +1,18 @@
-import { Card, CardHeader } from "@mui/material"
-import { UserInterface } from "../../types"
+import { Avatar, Card, CardHeader } from "@mui/material"
+import { UserProfileInterface } from "../../types"
+import { formatDateFromDatetime } from "../utils/formatDateFromDatetime"
 
-const ProfileCard = ({ user }: { user: UserInterface }) => {
+const ProfileCard = ({ user }: { user: UserProfileInterface }) => {
   return (
     <Card aria-label="user">
       <CardHeader
-        avatar={user.displayName[0]}
+        avatar={<Avatar>{user.displayName[0]}</Avatar>}
         title={user.displayName}
-        titleTypographyProps={{ variant: "h2" }}
-        subheader={user.createdAt}
-        subheaderTypographyProps={{ variant: "h3" }}
+        titleTypographyProps={{ variant: "h4" }}
+        subheader={`Created at: ${formatDateFromDatetime(
+          user.createdAt
+        )}, modified at: ${formatDateFromDatetime(user.modifiedAt)}`}
+        subheaderTypographyProps={{ variant: "body2" }}
       />
     </Card>
   )

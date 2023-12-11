@@ -16,6 +16,6 @@ create table
     constraint posts_uid_fkey foreign key (uid) references users (uid)
   ) tablespace pg_default;
 
-create trigger handle_updated_at before
+create trigger handle_posts_updated_at before
 update on posts for each row
 execute function moddatetime ('modified_at');

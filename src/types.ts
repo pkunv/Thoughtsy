@@ -27,7 +27,7 @@ export interface SignInFormValues {
   password: string
 }
 
-export interface UserInterface {
+export interface UserProfileInterface {
   uid: string
   displayName: string
   email: string

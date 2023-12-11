@@ -11,7 +11,8 @@ import App from "./components/routes/App"
 import ErrorRoute from "./components/routes/ErrorRoute"
 import Homepage from "./components/routes/Homepage"
 import Post from "./components/routes/Post"
-import { postLoader, postsLoader, userLoader } from "./loaderFunctions"
+import Profile from "./components/routes/Profile"
+import { postLoader, postsLoader, userLoader, userProfileLoader } from "./loaderFunctions"
 
 export const routes = [
   {
@@ -72,6 +73,16 @@ export const routes = [
             element: <PostForm post={undefined} />
           }
         ]
+      },
+      {
+        path: "/users/:userId",
+        loader: userProfileLoader,
+        element: <Profile />
+      },
+      {
+        path: "/profile",
+        loader: userProfileLoader,
+        element: <Profile />
       }
     ]
   }

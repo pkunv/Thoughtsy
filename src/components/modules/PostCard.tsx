@@ -1,29 +1,28 @@
+import DeleteIcon from "@mui/icons-material/Delete"
+import EditIcon from "@mui/icons-material/Edit"
+import MoreVertIcon from "@mui/icons-material/MoreVert"
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt"
+import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt"
 import {
   Avatar,
-  Box,
   Card,
   CardActions,
   CardContent,
   CardHeader,
   Checkbox,
   Divider,
-  Grid,
   IconButton,
   Menu,
   MenuItem,
   Typography
 } from "@mui/material"
-import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt"
-import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt"
-import { ContextType, PostInterface } from "../../types"
-import MoreVertIcon from "@mui/icons-material/MoreVert"
+import React from "react"
+import { useFetcher, useOutletContext } from "react-router-dom"
 import { useRouteLoaderData } from "react-router-typesafe"
 import { userLoader } from "../../loaderFunctions"
-import React from "react"
-import EditIcon from "@mui/icons-material/Edit"
-import DeleteIcon from "@mui/icons-material/Delete"
+import { ContextType, PostInterface } from "../../types"
+import { formatDateFromDatetime } from "../utils/formatDateFromDatetime"
 import { StyledLink } from "./StyledLink"
-import { useFetcher, useOutletContext } from "react-router-dom"
 
 const PostCard = ({ post, settingsMenu }: { post: PostInterface; settingsMenu: boolean }) => {
   const { handleModalToggle, setPostDeleteId } = useOutletContext<ContextType>()
@@ -55,12 +54,16 @@ const PostCard = ({ post, settingsMenu }: { post: PostInterface; settingsMenu: b
         aria-label="post"
       >
         <CardHeader
-          avatar={<Avatar>{post.displayName[0]}</Avatar>}
-          title={post.displayName}
+          avatar={
+            <StyledLink to={`/users/${post.uid}`}>
+              <Avatar>{post.displayName[0]}</Avatar>
+            </StyledLink>
+          }
+          title={<StyledLink to={`/users/${post.uid}`}>{post.displayName}</StyledLink>}
           subheader={
-            post.createdAt.replaceAll("T", " ").substr(0, 16) +
+            formatDateFromDatetime(post.createdAt) +
             (post.modifiedAt !== null
-              ? ` | Modified: ${post.modifiedAt.replaceAll("T", " ").substr(0, 16)}`
+              ? ` | Modified: ${formatDateFromDatetime(post.modifiedAt)}`
               : "")
           }
           aria-label="post-header"
