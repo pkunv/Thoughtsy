@@ -31,7 +31,7 @@ export interface UserProfileInterface {
   uid: string
   displayName: string
   email: string
-  postCount: number | null | undefined
+  postCount: Array<{ count: number }>
   createdAt: string
   modifiedAt: string
   active: boolean

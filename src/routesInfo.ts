@@ -36,7 +36,7 @@ export const routesInfo = [
   {
     accessableFor: [AccessabilityTypes.User],
     key: "profile",
-    name: "Profile",
+    name: "Your profile",
     navItem: true,
     path: "/profile",
     type: "route"
@@ -79,6 +79,14 @@ export const routesInfo = [
     name: "Post",
     navItem: false,
     path: "/posts/:postId",
+    type: "route"
+  },
+  {
+    accessableFor: [AccessabilityTypes.Public, AccessabilityTypes.User],
+    key: "user",
+    name: "User",
+    navItem: false,
+    path: "/users/:userId",
     type: "route"
   }
 ] as Array<RouteInfo>
